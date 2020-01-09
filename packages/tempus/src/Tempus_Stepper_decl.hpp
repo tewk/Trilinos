@@ -167,7 +167,7 @@ private:
 
   std::string stepperType_;             //< Name of stepper type
   bool useFSAL_ = false;                //< Use First-Step-As-Last (FSAL) principle
-  std::string ICConsistency_ = "None";  //< Type of consistency to apply to ICs.
+  std::string ICConsistency_ = std::string("None");  //< Type of consistency to apply to ICs.
   bool ICConsistencyCheck_ = true;      //< Check if the initial condition is consistent
 
 protected:
