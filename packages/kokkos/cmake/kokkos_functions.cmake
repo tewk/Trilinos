@@ -27,6 +27,10 @@ function(set_kokkos_cxx_compiler)
   set(INTERNAL_CXX_COMPILER_ID ${CMAKE_CXX_COMPILER_ID})
   set(INTERNAL_CXX_COMPILER_VERSION ${CMAKE_CXX_COMPILER_VERSION})
 
+  message( ${INTERNAL_CXX_COMPILER} " --- " ${INTERNAL_CXX_COMPILER_ID} " --- " ${INTERNAL_CXX_COMPILER_VERSION} )
+
+  if( NOT ${INTERNAL_CXX_COMPILER_ID} STREQUAL MSVC )
+
   # Check if the compiler is nvcc (which really means nvcc_wrapper).
   execute_process(COMMAND ${INTERNAL_CXX_COMPILER} --version
                   COMMAND grep nvcc
@@ -51,6 +55,8 @@ function(set_kokkos_cxx_compiler)
            INTERNAL_CXX_COMPILER_VERSION ${INTERNAL_CXX_COMPILER_VERSION})
   endif()
 
+  endif()
+
   # Enforce the minimum compilers supported by Kokkos.
   set(KOKKOS_MESSAGE_TEXT "Compiler not supported by Kokkos.  Required compiler versions:")
   set(KOKKOS_MESSAGE_TEXT "${KOKKOS_MESSAGE_TEXT}\n    Clang      3.5.2 or higher")
@@ -58,6 +64,7 @@ function(set_kokkos_cxx_compiler)
   set(KOKKOS_MESSAGE_TEXT "${KOKKOS_MESSAGE_TEXT}\n    Intel     15.0.2 or higher")
   set(KOKKOS_MESSAGE_TEXT "${KOKKOS_MESSAGE_TEXT}\n    NVCC      7.0.28 or higher")
   set(KOKKOS_MESSAGE_TEXT "${KOKKOS_MESSAGE_TEXT}\n    PGI         17.1 or higher\n")
+  set(KOKKOS_MESSAGE_TEXT "${KOKKOS_MESSAGE_TEXT}\n    MSVC        19.0 or higher\n")
 
   if(INTERNAL_CXX_COMPILER_ID STREQUAL Clang)
     if(INTERNAL_CXX_COMPILER_VERSION VERSION_LESS 3.5.2)
@@ -77,6 +84,10 @@ function(set_kokkos_cxx_compiler)
     endif()
   elseif(INTERNAL_CXX_COMPILER_ID STREQUAL PGI)
     if(INTERNAL_CXX_COMPILER_VERSION VERSION_LESS 17.1)
+      message(FATAL_ERROR "${KOKKOS_MESSAGE_TEXT}")
+    endif()
+  elseif(INTERNAL_CXX_COMPILER_ID STREQUAL MSVC)
+    if(INTERNAL_CXX_COMPILER_VERSION VERSION_LESS 19.0)
       message(FATAL_ERROR "${KOKKOS_MESSAGE_TEXT}")
     endif()
   endif()

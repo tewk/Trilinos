@@ -43,15 +43,29 @@ IF (${Trilinos_ENABLE_Kokkos})
   include(${KOKKOS_SRC_PATH}/cmake/kokkos_settings.cmake)
 
   #------------ GENERATE HEADER AND SOURCE FILES -------------------------------
+  foreach(NameAndValue ${KOKKOS_SETTINGS})
+	  # Strip leading spaces
+	  string(REGEX REPLACE "^[ ]+" "" NameAndValue ${NameAndValue})
+	  # Find variable name
+	  string(REGEX MATCH "^[^=]+" Name ${NameAndValue})
+	  # Find the value
+	  string(REPLACE "${Name}=" "" Value ${NameAndValue})
+	  # Set the variable
+	  message(${Name} " = " "${Value}")
+	  set(ENV{${Name}} "${Value}")
+  endforeach()
+  message("Kokkos settings generation about to happen:\n" "make -f ${KOKKOS_SRC_PATH}/cmake/Makefile.generate_cmake_settings generate_build_settings")
+  set( ENV{CXX} "${CMAKE_CXX_COMPILER}" )
   execute_process(
-    COMMAND ${KOKKOS_SETTINGS} make -f ${KOKKOS_SRC_PATH}/cmake/Makefile.generate_cmake_settings CXX=${CMAKE_CXX_COMPILER} generate_build_settings
+    COMMAND make -f ${KOKKOS_SRC_PATH}/cmake/Makefile.generate_cmake_settings generate_build_settings
     WORKING_DIRECTORY "${Kokkos_GEN_DIR}"
     OUTPUT_FILE ${Kokkos_GEN_DIR}/core_src_make.out
     RESULT_VARIABLE GEN_SETTINGS_RESULT
   )
   if (GEN_SETTINGS_RESULT)
+    message( "GEN_SETTINGS_RESULT " ${GEN_SETTINGS_RESULT} )
     message(FATAL_ERROR "Kokkos settings generation failed:\n"
-        "${KOKKOS_SETTINGS} make -f ${KOKKOS_SRC_PATH}/cmake/Makefile.generate_cmake_settings CXX=${CMAKE_CXX_COMPILER} generate_build_settings")
+        "make -f ${KOKKOS_SRC_PATH}/cmake/Makefile.generate_cmake_settings generate_build_settings")
   endif()
   include(${Kokkos_GEN_DIR}/kokkos_generated_settings.cmake)
   set(libdir lib)

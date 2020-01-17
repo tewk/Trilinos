@@ -35,19 +35,19 @@ kokkos_append_var2 = $(call kokkos_appendvar2_makefile,$1); $(call kokkos_append
 kokkos_append_varval = $(call kokkos_appendval_makefile,$1,$2); $(call kokkos_appendval_cmakefile,$1,$2,$3)
 
 kokkos_fixup_sed_impl = sed \
-		-e 's|$(KOKKOS_PATH)/core/src|$(PREFIX)/include|g' \
-		-e 's|$(KOKKOS_PATH)/containers/src|$(PREFIX)/include|g' \
-		-e 's|$(KOKKOS_PATH)/algorithms/src|$(PREFIX)/include|g' \
-		-e 's|-L$(PWD)|-L$(PREFIX)/lib|g' \
-		-e 's|= libkokkos.a|= $(PREFIX)/lib/libkokkos.a|g' \
-		-e 's|= $(KOKKOS_CONFIG_HEADER)|= $(PREFIX)/include/$(KOKKOS_CONFIG_HEADER)|g' $1 \
-		> $1.tmp && mv -f $1.tmp $1
+		-e "s|$(KOKKOS_PATH)/core/src|$(PREFIX)/include|g" \
+		-e "s|$(KOKKOS_PATH)/containers/src|$(PREFIX)/include|g" \
+		-e "s|$(KOKKOS_PATH)/algorithms/src|$(PREFIX)/include|g" \
+		-e "s|-L$(PWD)|-L$(PREFIX)/lib|g" \
+		-e "s|= libkokkos.a|= $(PREFIX)/lib/libkokkos.a|g" \
+		-e "s|= $(KOKKOS_CONFIG_HEADER)|= $(PREFIX)/include/$(KOKKOS_CONFIG_HEADER)|g" $1 \
+		> $1.tmp ; mv -f $1.tmp $1
 
 $(KOKKOS_PKGCONFIG): $(KOKKOS_PATH)/core/src/$(KOKKOS_PKGCONFIG).in
-	@sed -e 's|@CMAKE_INSTALL_PREFIX@|$(PREFIX)|g' \
-	    -e 's|@KOKKOS_CXXFLAGS@|$(patsubst -I%,,$(KOKKOS_CXXFLAGS))|g' \
-	    -e 's|@KOKKOS_EXTRA_LIBS_LIST@|$(KOKKOS_EXTRA_LIBS)|g' \
-	    -e 's|@KOKKOS_LINK_FLAGS@|$(KOKKOS_LINK_FLAGS)|g' \
+	@sed -e "s|@CMAKE_INSTALL_PREFIX@|$(PREFIX)|g" \
+	    -e "s|@KOKKOS_CXXFLAGS@|$(patsubst -I%,,$(KOKKOS_CXXFLAGS))|g" \
+	    -e "s|@KOKKOS_EXTRA_LIBS_LIST@|$(KOKKOS_EXTRA_LIBS)|g" \
+	    -e "s|@KOKKOS_LINK_FLAGS@|$(KOKKOS_LINK_FLAGS)|g" \
 	     $< > $@
 
 kokkos_fixup_sed = $(call kokkos_fixup_sed_impl,$(KOKKOS_MAKEFILE)); $(call kokkos_fixup_sed_impl,$(KOKKOS_CMAKEFILE))
